@@ -7,6 +7,8 @@
   <style>
     body {
       font-family: sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -15,10 +17,14 @@
       margin: 0;
     }
     .container {
-      background: white;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 20px;
     }
     .bpm-controls {
       display: flex;
@@ -30,12 +36,17 @@
       width: 60px;
       text-align: center;
       padding: 5px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #f0f0f0;
     }
     button {
       font-size: 24px;
       padding: 8px 12px;
-
-      background: white;
+      background: #2a2a2a;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      border-radius: 6px;
       cursor: pointer;
     }
     .slider-container {
@@ -43,9 +54,12 @@
       align-items: center;
       gap: 10px;
     }
+    .slider-container span {
+      color: #f0f0f0;
+    }
     .start-stop {
       padding: 10px 20px;
-      background: #2980b9;
+      background: #8a2be2;
       color: white;
       font-weight: bold;
       border: none;
@@ -55,6 +69,7 @@
     }
     input[type='range'] {
       width: 150px;
+      accent-color: #8a2be2;
     }
   </style>
 </head>
@@ -88,7 +103,6 @@
     const volumeSlider = document.getElementById('volume-slider');
     const startStopBtn = document.getElementById('start-stop');
 
-    // Load last BPM from localStorage
     let bpm = parseInt(localStorage.getItem('bpm')) || 80;
     let isRunning = false;
     let volume = parseFloat(localStorage.getItem('volume')) || 0.5;
@@ -96,22 +110,21 @@
     volumeSlider.value = volume;
 
     function tick() {
-        const bufferSize = audioCtx.sampleRate * 0.1;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
+      const bufferSize = audioCtx.sampleRate * 0.1;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
 
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.sin((2 * Math.PI * 880 * i) / audioCtx.sampleRate) * Math.pow(1 - i / bufferSize, 2);
-        }
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.sin((2 * Math.PI * 880 * i) / audioCtx.sampleRate) * Math.pow(1 - i / bufferSize, 2);
+      }
 
-        const source = audioCtx.createBufferSource();
-        const gain = audioCtx.createGain();
-        source.buffer = buffer;
-        gain.gain.value = volume;
-        source.connect(gain).connect(audioCtx.destination);
-        source.start();
+      const source = audioCtx.createBufferSource();
+      const gain = audioCtx.createGain();
+      source.buffer = buffer;
+      gain.gain.value = volume;
+      source.connect(gain).connect(audioCtx.destination);
+      source.start();
     }
-
 
     function startMetronome() {
       const interval = (60 / bpm) * 1000;
